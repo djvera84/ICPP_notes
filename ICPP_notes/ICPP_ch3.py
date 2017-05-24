@@ -80,9 +80,11 @@ for j in range(x):
 #%%
 # Find the cube root of a perfect cube
 x = int(input('Enter an integer: '))
+
 for ans in range(abs(x) + 1):
     if ans**3 >= abs(x):
         break
+
 if ans**3 != abs(x):
     print(x, 'is not a perfect cube.')
 else:
@@ -91,8 +93,10 @@ else:
     print('Cube root of', x, 'is', ans)
 #%%
 total = 0
+
 for c in '123456789':
     total = total + int(c)
+
 print(total)
 
 #%% Finger Exercise: Let s be a string that contains a sequence of decimal
@@ -106,3 +110,165 @@ numbers = a_string.split(',')
 for c in numbers:
     total += float(c)
 print(total)
+#%% Approximate Solutions and Bisection Search =============================
+number = 25
+epsilon = 0.01
+step = epsilon**2
+num_guesses = 0
+ans = 0.0
+
+while abs(ans**2 - number) >= epsilon and ans <= number:
+    ans += step
+    num_guesses += 1
+
+print('num_guesses = ', num_guesses)
+
+if abs(ans**2 - number) >= epsilon:
+    print('Failed on square root of', number)
+else:
+    print(ans, 'is close to the square root of', number)
+#%%
+number = 123456
+epsilon = 0.01
+step = epsilon**2
+num_guesses = 0
+ans = 0.0
+
+while abs(ans**2 - number) >= epsilon and ans*ans <= number:
+    ans += step
+    num_guesses += 1
+
+print('num_guesses = ', num_guesses)
+
+if abs(ans**2 - number) >= epsilon:
+    print('Failed on square root of', number)
+else:
+    print(ans, 'is close to the square root of', number)
+#%%
+# this takes a while :)
+number = 123456
+epsilon = 0.01
+step = epsilon**3
+num_guesses = 0
+ans = 0.0
+
+while abs(ans**2 - number) >= epsilon and ans*ans <= number:
+    ans += step
+    num_guesses += 1
+
+print('num_guesses = ', num_guesses)
+
+if abs(ans**2 - number) >= epsilon:
+    print('Failed on square root of', number)
+else:
+    print(ans, 'is close to the square root of', number)
+#%%
+number = 25
+epsilon = 0.01
+num_guesses = 0
+low = 0.0
+high = max(1.0, number)
+ans = (high + low) / 2.0
+
+while abs(ans**2 - number) >= epsilon:
+    print('low =', low, 'high =', high, 'ans =', ans)
+    num_guesses += 1
+    if ans**2 < number:
+        low = ans
+    else:
+        high = ans
+    ans = (high + low) / 2.0
+
+
+print('num_guesses = ', num_guesses)
+print(ans, 'is close to the square root of', number)
+#%%
+number = 123456
+epsilon = 0.01
+num_guesses = 0
+low = 0.0
+high = max(1.0, number)
+ans = (high + low) / 2.0
+
+while abs(ans**2 - number) >= epsilon:
+    print('low =', low, 'high =', high, 'ans =', ans)
+    num_guesses += 1
+    if ans**2 < number:
+        low = ans
+    else:
+        high = ans
+    ans = (high + low) / 2.0
+
+
+print('num_guesses = ', num_guesses)
+print(ans, 'is close to the square root of', number)
+#%%
+number = 123456789
+epsilon = 0.01
+num_guesses = 0
+low = 0.0
+high = max(1.0, number)
+ans = (high + low) / 2.0
+
+while abs(ans**2 - number) >= epsilon:
+    print('low =', low, 'high =', high, 'ans =', ans)
+    num_guesses += 1
+    if ans**2 < number:
+        low = ans
+    else:
+        high = ans
+    ans = (high + low) / 2.0
+
+
+print('num_guesses = ', num_guesses)
+print(ans, 'is close to the square root of', number)
+#%% Finger Exercise: What would the code in Figure 3.4 do if the statement 
+# x = 25 were replaced by x = -25?
+number = -25
+epsilon = 0.01
+num_guesses = 0
+low = 0.0
+high = max(1.0, number)
+ans = (high + low) / 2.0
+
+while abs(ans**2 - number) >= epsilon:
+    print('low =', low, 'high =', high, 'ans =', ans)
+    num_guesses += 1
+    if ans**2 < number:
+        low = ans
+    else:
+        high = ans
+    ans = (high + low) / 2.0
+
+
+print('num_guesses = ', num_guesses)
+print(ans, 'is close to the square root of', number)
+# run an infinite loop: the while statement is subtracting -25 from smaller
+# numbers so will always be >= epsilon
+
+#%% Finger Exercise: What would have to be changed to make the code in
+# Figure 3.4 work for finding an approximation to the cube root of both 
+# negative and positive numbers? (Hint: think about changing low to 
+# ensure that the answer lies within the region being searched.)
+number = -27
+epsilon = 0.01
+num_guesses = 0
+low = min(number, 0.0)
+high = max(1.0, number)
+ans = (high + low) / 2.0
+
+while abs(ans**3 - number) >= epsilon:
+    print('low =', low, 'high =', high, 'ans =', ans)
+    num_guesses += 1
+    if ans**3 < number:
+        low = ans
+    else:
+        high = ans
+    ans = (high + low) / 2.0
+
+
+print('num_guesses = ', num_guesses)
+print(ans, 'is close to the cube root of', number)
+
+
+
