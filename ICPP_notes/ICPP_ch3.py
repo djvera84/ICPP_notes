@@ -270,5 +270,64 @@ while abs(ans**3 - number) >= epsilon:
 print('num_guesses = ', num_guesses)
 print(ans, 'is close to the cube root of', number)
 
+#%% A Few Words About using Floats =========================================
+x = 0.0
+
+for i in range(10) :
+    x = x + 0.1
+
+if x == 1.0:
+    print(x, '= 1.0')
+else:
+    print(x, "is not 1.0")
+    
+# Finger Exercise: What is the decimal equivalent of the binary number 
+# 10011?
+
+# 10011 = 1*2^4 + 0*2^3 + 0*2^2+ 1*2^1 + 1*2^0 =  16 + 2 + 1 = 19
+
+#%% Newton-Raphson =========================================================
+# Newton-Raphson for Square Root
+# Find x such that x**2 - 24 is within epsilon of 0
+epsilon = 0.01
+k = 24.0
+guess = k / 2.0
+
+while abs(guess*guess - k) >= epsilon:
+    guess = guess - (((guess**2) - k) / (2 * guess))
+print('Square root of', k, 'is about', guess)
+
+# Finger Exercise: Add some code to the implementation of Newton-Raphson
+# that keeps track of the number of iterations use to find the root.
+# Us that code as part of a program that comapres the efficiency of
+# Newton-Raphson and bisection search. (You should discover 
+# Newton-Raphson is more efficient.)
+
+epsilon = 0.01
+k = 24.0
+guess = k / 2.0
+step = 0
+
+while abs(guess*guess - k) >= epsilon:
+    guess = guess - (((guess**2) - k) / (2 * guess))
+    step += 1
+print('Square root of', k, 'is about', guess)
+print("Newton Raphson found answer in", step, "steps.")
 
 
+num_guesses = 0
+low = 0.0
+high = max(1.0, k)
+ans = (high + low) / 2.0
+
+while abs(ans**2 - k) >= epsilon:
+    num_guesses += 1
+    if ans**2 < k:
+        low = ans
+    else:
+        high = ans
+    ans = (high + low) / 2.0
+print(ans, 'is close to the square root of', k)
+print('Bisection search found answer in', num_guesses, "steps")
+
+print("\nSummary: \nNR Steps:", step, "\nBS Steps:", num_guesses)
