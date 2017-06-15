@@ -116,3 +116,7 @@ try:
     print(get_ratios([1.0, 2.0], [3.0]))
 except ValueError as msg:
     print(msg)
+    
+#%% Assertions
+# assert Boolean expression or
+# assert Boolean expression, argument
