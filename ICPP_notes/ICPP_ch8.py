@@ -134,3 +134,177 @@ for p in p_list:
 p_list.sort()
 for p in p_list:
     print(p)
+
+#%% Inheritance ============================================================
+class MITPerson(Person):
+    
+    next_id_num = 0 # identification number
+    
+    def __init__(self, name):
+        Person.__init__(self, name)
+        self.id_num = MITPerson.next_id_num
+        MITPerson.next_id_num += 1
+        
+    def get_id_num(self):
+        return self.id_num
+    
+    def __lt__(self, other):
+        return self.id_num < other.id_num
+    # added in next section on multiple levels of inheritance
+    def is_student(self):
+        return isinstance(self, Student)
+    
+
+p1 = MITPerson('Barbara Beaver')
+print(str(p1) + '\'s id number is ' + str(p1.get_id_num()))
+#%%
+p1 = MITPerson('Mark Guttag')
+p2 = MITPerson('Billy Bob Beaver')
+p3 = MITPerson('Billy Bob Beaver')
+p4 = Person('Billy Bob Beaver')
+
+print('p1 < p2 =', p1 < p2)
+print('p3 < p2 =', p3 < p2)
+print('p4 < p1 =', p4 < p1)
+
+print('p1 < p4 =', p1 < p4)
+
+#%% Multiple Levels of Inheritance
+class Student(MITPerson):
+    pass
+
+
+class UG(Student):
+    
+    def __init__(self, name, class_year):
+        MITPerson.__init__(self, name)
+        self.year = class_year
+    
+    def get_class(self):
+        return self.year
+    
+
+class Grad(Student):
+    pass
+
+
+p5 = Grad('Buzz Aldrin')
+p6 = UG('Billy Beaver', 1984)
+print(p5, 'is a graduate student is', type(p5) == Grad)
+print(p5, 'is an undergraduate student is', type(p5) == UG)
+
+isinstance([1,2], list)
+
+#%%
+print(p5, 'is a student is', p5.is_student())
+print(p6, 'is a student is', p6.is_student())
+print(p3, 'is a student is', p3.is_student())
+
+#%% Encapsulation and Information Hiding ===================================
+class Grades(object):
+    def __init__(self):
+        """Create empty grade book"""
+        self.students = []
+        self.grades = {}
+        self.is_sorted = True
+        
+    def add_student(self, student):
+        """Assumes: student is of type Student
+           Add student to the grade book"""
+        if student in self.students:
+            raise ValueError('Duplicate student')
+        self.students.append(student)
+        self.grades[student.get_id_num()] = []
+        self.is_sorted = False
+    
+    def add_grade(self, student, grade):
+        """Assumes: grade is a float
+           Add grade to the list of grades for student"""
+        try:
+            self.grades[student.get_id_num()].append(grade)
+        except:
+            raise ValueError('Student not in mapping')
+            
+    def get_grades(self, student):
+        """Return a list of grades for student"""
+        try: # return copy of list of student's grades
+            return self.grades[student.get_id_num()][:]
+        except:
+            raise ValueError('Student not in mapping')
+    
+    def get_students(self):
+        """Return a sorted list of the students in the grade book"""
+        if not self.is_sorted:
+            self.students.sort()
+            self.is_sorted = True
+        return self.students[:] # return a copy of list of students
+   
+
+
+def grade_report(course):
+    """Assumes course is of type Grades"""
+    report = ''
+    for s in course.get_students():
+        tot = 0.0
+        num_grades = 0
+        for g in course.get_grades(s):
+            tot += g
+            num_grades += 1
+        try:
+            average = tot/num_grades
+            report = report + '\n'\
+                            + str(s) + '\'s mean grade is ' + str(average)
+        except ZeroDivisionError:
+            report = report + '\n'\
+                     + str(s) + ' has no grades'
+    return report
+
+ug1 = UG('Jane Doe', 2014)
+ug2 = UG('John Doe', 2015)
+ug3 = UG('David Henry', 2003)
+g1 = Grad('Billy Buckner')
+g2 = Grad('Bucky F. Dent')
+six_hundred = Grades()
+six_hundred.add_student(ug1)
+six_hundred.add_student(ug2)
+six_hundred.add_student(g1)
+six_hundred.add_student(g2)
+
+for s in six_hundred.get_students():
+    six_hundred.add_grade(s, 75)
+   
+six_hundred.add_grade(g1, 25)
+six_hundred.add_grade(g2, 100)
+six_hundred.add_student(ug3)
+print(grade_report(six_hundred))
+#%%
+
+
+class infoHiding(object):
+    def __init__(self):
+        self.visible = 'Look at me'
+        self.__also_visible__ = 'Look at me too'
+        self.__invisible = 'Don\'t look at me directly'
+        
+    def print_visible(self):
+        print(self.visible)
+    
+    def print_invisible(self):
+        print(self.__invisible)
+        
+    def __print_invisible(self):
+        print(self.__invisible)
+    
+    def __print_invisible__(self):
+        print(self.__invbisible)
+
+
+test = infoHiding()
+print(test.visible)
+print(test.__also_visible__)
+print(test.__invisible)
+#%%
+test = infoHiding()
+test.print_invisible()
+test.__print_invisible__()
+test.__print_invisible()
