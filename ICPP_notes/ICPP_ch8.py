@@ -308,3 +308,61 @@ test = infoHiding()
 test.print_invisible()
 test.__print_invisible__()
 test.__print_invisible()
+#%%
+
+
+class subClass(infoHiding):
+    def __init__(self):
+        print('from subclass', self.__invisible)
+
+
+test = subClass()
+
+#%% Generators
+class BetterGrades(object):
+    def __init__(self):
+        """Create empty grade book"""
+        self.students = []
+        self.grades = {}
+        self.is_sorted = True
+        
+    def add_student(self, student):
+        """Assumes: student is of type Student
+           Add student to the grade book"""
+        if student in self.students:
+            raise ValueError('Duplicate student')
+        self.students.append(student)
+        self.grades[student.get_id_num()] = []
+        self.is_sorted = False
+    
+    def add_grade(self, student, grade):
+        """Assumes: grade is a float
+           Add grade to the list of grades for student"""
+        try:
+            self.grades[student.get_id_num()].append(grade)
+        except:
+            raise ValueError('Student not in mapping')
+            
+    def get_grades(self, student):
+        """Return a list of grades for student"""
+        try: # return copy of list of student's grades
+            return self.grades[student.get_id_num()][:]
+        except:
+            raise ValueError('Student not in mapping')
+    
+    # better version of get_students
+    def better_get_students(self):
+        """Return a sorted list of the students in the grade book
+           one at a time in alphabetical order"""
+        if not self.is_sorted:
+            self.students.sort()
+            self.is_sorted = True
+        for s in self.students:
+            yield s
+
+
+book = BetterGrades()
+book.add_student(Grad('Julie'))
+book.add_student(Grad('Charlie'))
+for s in book.better_get_students():
+    print(s)   
