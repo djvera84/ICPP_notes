@@ -1,81 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-ICPP Chapter 11
-Plotting and More about Classes
+From ICPP Chapter 11
+Section 11.2 Plotting Mortgages
 @author: Daniel J. Vera, Ph.D.
 """
-#%% Plotting Using PyLab ===================================================
 import pylab
 
-pylab.figure(1)             # create figure 1
-pylab.plot([1, 2, 3, 4],    # draw on figure 1
-           [1, 7, 3, 5])
-pylab.show()                # show figure on screen
-
-pylab.figure(1)                 # create figure 1
-pylab.plot([1, 2, 3, 4],        # draw on figure 1
-           [1, 2, 3, 4])
-pylab.figure(2)                 # create figure 2
-pylab.plot([1, 4, 2, 3],        # draw on figure 2
-           [5, 6, 7, 8])
-pylab.savefig('Figure-Addie')   # save figure 2
-pylab.figure(1)                 # go back to working on figure 1
-pylab.plot([5, 6, 10, 3])       # draw again on figure 1
-pylab.savefig('Figure-Jane')    # save figure 1
-
-# Observe that the last call to pylab.plot is passed only one argument.
-# This argument supplies the y values. The corresponding x values default
-# to the sequence yielded by range(len([5, 6, 10, 3])), which is why they
-# range from 0 to 3 in this case. PyLab has a notion of “current figure.” 
-# Executing pylab.figure(x) sets the current figure to the figure numbered
-# x. Subsequently executed calls of plotting functions implicitly refer to
-# that figure until another invocation of pylab.figure occurs. 
-# (from textbook)
-#%%
-principal = 10000 # intial investment
-interest_rate = 0.05
-years = 20
-values = []
-for i in range(years + 1):
-    values.append(principal)
-    principal += principal * interest_rate
-pylab.plot(values)
-pylab.title('5% Growth, Compounded Annually')
-pylab.xlabel('Years of Coumpounding')
-pylab.ylabel('Value of Principal ($)')
-
-#%%
-principal = 10000 # intial investment
-interest_rate = 0.05
-years = 20
-values = []
-for i in range(years + 1):
-    values.append(principal)
-    principal += principal * interest_rate
-pylab.plot(values, 'ko')
-pylab.title('5% Growth, Compounded Annually')
-pylab.xlabel('Years of Coumpounding')
-pylab.ylabel('Value of Principal ($)')
-#%%
-principal = 10000 # intial investment
-interest_rate = 0.05
-years = 20
-values = []
-for i in range(years + 1):
-    values.append(principal)
-    principal += principal * interest_rate
-pylab.plot(values, linewidth = 30)
-pylab.title('5% Growth, Compounded Annually',
-            fontsize = 'xx-large')
-pylab.xlabel('Years of Coumpounding',
-             fontsize = 'x-small')
-pylab.ylabel('Value of Principal ($)')
-#%%
-# pylab.rcParams['lines.linewidth'] = 6
-# can use ggplot, see:
-# http://matplotlib.org/users/style_sheets.html#style-sheets
-
-#%% Plotting Mortgages, an Extended Example
 def find_payment(loan, r, m):
     """Assumes: loan and r are floats, m an int
        Returns: monthly payment for a mortgage of size
