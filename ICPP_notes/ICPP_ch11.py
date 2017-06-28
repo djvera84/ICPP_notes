@@ -5,6 +5,8 @@ Plotting and More about Classes
 @author: Daniel J. Vera, Ph.D.
 """
 #%% Plotting Using PyLab ===================================================
+import matplotlib
+matplotlib.use('WX')
 import pylab
 
 pylab.figure(1)             # create figure 1
