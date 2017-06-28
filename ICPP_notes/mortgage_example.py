@@ -137,12 +137,6 @@ def compare_mortgages(amt, years, fixed_rate, pts, pts_rate,
         for mort in morts:
             mort.make_payment()
     plot_mortgages(morts, amt)
-    print(morts)
-    print(morts[1].paid)
-    print(morts[2].paid)
-    print(morts[0].paid)
-    
-
 
 compare_mortgages(amt=200000, years=30, fixed_rate=0.07, pts=3.25,
                   pts_rate=0.05, var_rate1=0.045, var_rate2=0.095, 
