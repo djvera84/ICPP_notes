@@ -36,7 +36,7 @@ class Mortgage(object):
         return self.legend
     
     def plot_payments(self, style):
-        pylab.plot(self.outstanding, style, label = self.legend)
+        pylab.plot(self.paid[1:], style, label = self.legend)
     
     def plot_balance(self, style):
         pylab.plot(self.outstanding, style, label = self.legend)
@@ -95,7 +95,7 @@ class TwoRate(Mortgage):
             self.payment = find_payment(self.outstanding[-1],
                                         self.rate,
                                         self.months - self.teaser_months)
-            Mortgage.make_payment(self)
+        Mortgage.make_payment(self)
 
 
 def plot_mortgages(morts, amt):
@@ -137,6 +137,11 @@ def compare_mortgages(amt, years, fixed_rate, pts, pts_rate,
         for mort in morts:
             mort.make_payment()
     plot_mortgages(morts, amt)
+    print(morts)
+    print(morts[1].paid)
+    print(morts[2].paid)
+    print(morts[0].paid)
+    
 
 
 compare_mortgages(amt=200000, years=30, fixed_rate=0.07, pts=3.25,

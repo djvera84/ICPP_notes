@@ -106,7 +106,7 @@ class Mortgage(object):
         return self.legend
     
     def plot_payments(self, style):
-        pylab.plot(self.outstanding, style, label = self.legend)
+        pylab.plot(self.paid[1:], style, label = self.legend)
     
     def plot_balance(self, style):
         pylab.plot(self.outstanding, style, label = self.legend)
@@ -126,14 +126,14 @@ class Mortgage(object):
         net = pylab.array(tot_pd) - equity_acquired
         pylab.plot(net, style, label = self.legend)
 
-#a1 = pylab.array([1, 2, 4])
-#print('a1 =', a1) 
-#a2 = a1 * 2
-#print('a2 =', a2)
-#print('a1 + 3 =', a1 + 3)
-#print('3 - a1 =', 3 - a1)
-#print('a1 - a2 =', a1 - a2)
-#print('a1 * a2 =', a1 * a2)        
+a1 = pylab.array([1, 2, 4])
+print('a1 =', a1) 
+a2 = a1 * 2
+print('a2 =', a2)
+print('a1 + 3 =', a1 + 3)
+print('3 - a1 =', 3 - a1)
+print('a1 - a2 =', a1 - a2)
+print('a1 * a2 =', a1 * a2)        
 
 
 class Fixed(Mortgage):
@@ -165,7 +165,7 @@ class TwoRate(Mortgage):
             self.payment = find_payment(self.outstanding[-1],
                                         self.rate,
                                         self.months - self.teaser_months)
-            Mortgage.make_payment(self)
+        Mortgage.make_payment(self)
 
 
 def plot_mortgages(morts, amt):
