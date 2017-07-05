@@ -178,7 +178,7 @@ class Digraph(object):
     # nodes is a list of nodes in the graph
     # edges is a dict mapping each node to a list of its children
     def __init__(self):
-        self.nodes =[]
+        self.nodes = []
         self.edges = {}
     
     def add_node(self, node):
