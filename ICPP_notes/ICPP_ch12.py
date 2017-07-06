@@ -178,7 +178,7 @@ class Digraph(object):
     # nodes is a list of nodes in the graph
     # edges is a dict mapping each node to a list of its children
     def __init__(self):
-        self.nodes = []
+        self.nodes =[]
         self.edges = {}
     
     def add_node(self, node):
@@ -186,7 +186,7 @@ class Digraph(object):
             raise ValueError('Duplicate node')
         else:
             self.nodes.append(node)
-            self.edges[node] =[]
+            self.edges[node] = []
             
     def add_edge(self, edge):
         src = edge.get_source()
@@ -237,7 +237,7 @@ def print_path(path):
 
 # depth-first search
 def dfs(graph, start, end, path, shortest, to_print = False):
-    """Assumes graph is a Digraph; start and end are notes;
+    """Assumes graph is a Digraph; start and end are nodes;
        path and shortest are lists of nodes
        Returns a shortest path from start to end in graph"""
     path = path + [start]
@@ -279,7 +279,7 @@ def test_sp():
     print('Shortest path is', print_path(sp))
     
     sp = bfs(g, nodes[0], nodes[5])
-    print('Shotest path found by BFS:', print_path(sp))
+    print('Shortest path found by BFS:', print_path(sp))
 
 # breadth-first search
 def bfs(graph, start, end, to_print = False):
@@ -288,7 +288,7 @@ def bfs(graph, start, end, to_print = False):
     init_path = [start]
     path_queue = [init_path]
     if to_print:
-        print('Current BFS path:', print_path(path))
+        print('Current BFS path:', print_path(init_path))
     while len(path_queue) !=0:
         # Get and remove oldest element in path_queue
         tmp_path = path_queue.pop(0)
@@ -301,3 +301,33 @@ def bfs(graph, start, end, to_print = False):
                 new_path = tmp_path + [next_node]
                 path_queue.append(new_path)
     return None
+
+#%%=========================================================================
+# Finger Exercise: Consider a digraph with weighted edges. Is the first
+# path found by BFS guranteed to minimize the sum of the weights of the
+# edges.
+
+# No, the shortest may be more expensive then in terms of weights. Consider
+# following example
+
+def test_sp_weight():
+    nodes = []
+    for name in range(5): # Create 5 nodes
+        nodes.append(Node(str(name)))
+        g = Digraph()
+    for n in nodes:
+        g.add_node(n)
+    g.add_edge(WeightedEdge(nodes[0], nodes[1], 1))
+    g.add_edge(WeightedEdge(nodes[0], nodes[2], 1))
+    g.add_edge(WeightedEdge(nodes[1], nodes[3], 1))
+    g.add_edge(WeightedEdge(nodes[3], nodes[4], 1))
+    g.add_edge(WeightedEdge(nodes[2], nodes[4], 10))
+    spw = bfs(g, nodes[0], nodes[4])
+    print('Shortest path found by BFS:', print_path(spw))
+
+test_sp_weight()
+
+# The above finds the path 0->2->4 as the shortest path but the weight,
+# as we defined it is 1 + 10 = 11 for this path.
+
+# The path 0->1->3->4 is longer but its weight is 1 + 1 + 1 + 1 = 4 < 11
