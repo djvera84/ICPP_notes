@@ -197,3 +197,128 @@ def flip_plot_log(min_exp, max_exp):
 
 random.seed(0)
 flip_plot_log(4, 20)
+#%%
+def variance(X):
+    """Assumes X is a list of numbers.
+       Returns the standard ceviation of X"""
+    mean = sum(X) / len(X)
+    tot = 0.0
+    for x in X:
+        tot += (x - mean)**2
+    return tot / len(X)
+
+def std_dev(X):
+    """Assumes that X is a list of numbers.
+       Returns the standard deviation of X"""
+    return variance(X)**0.5
+#%%
+def make_plot(x_vals, y_vals, title, x_label, y_label, style,
+              logX= False, logY = False):
+    pylab.figure()
+    pylab.title(title)
+    pylab.xlabel(x_label)
+    pylab.ylabel(y_label)
+    pylab.plot(x_vals, y_vals, style)
+    if logX:
+        pylab.semilogx()
+    if logY:
+        pylab.semilogy()
+
+def run_trial(num_flips):
+    num_heads = 0
+    for n in range(num_flips):
+        if random.choice(('H', 'T')) == 'H':
+            num_heads += 1
+    num_tails = num_flips - num_heads
+    return (num_heads, num_tails)
+
+def flip_plot1(min_exp, max_exp, num_trials):
+    """Assumes min_exp, max_exp, and num_trials ints > 0;
+       min_exp < max_exp
+       Plots results of num_trials trials of
+       2**min_exp to 2**max_exp coin flips"""
+    ratio_means, diff_means, ratio_sds, diff_sds = [], [], [], []
+    x_axis = []
+    for exp in range(min_exp, max_exp + 1):
+        x_axis.append(2**exp)
+    for num_flips in x_axis:
+        ratios, diffs = [], []
+        for t in range(num_trials):
+            num_heads, num_tails = run_trial(num_flips)
+            ratios.append(num_heads / num_tails)
+            diffs.append(abs(num_heads - num_tails))
+        ratio_means.append(sum(ratios) / num_trials)
+        diff_means.append(sum(diffs) / num_trials)
+        ratio_sds.append(std_dev(ratios))
+        diff_sds.append(std_dev(diffs))
+    num_trials_string = ' (' + str(num_trials) + ' Trials)'
+    title = 'Mean Heads/Tails Ratios' + num_trials_string
+    make_plot(x_axis, ratio_means, title, 'Number of Flips',
+              'Mean Heads/Tails', 'ko', logX = True)
+    title = "SD Heads/Tails Ratios" + num_trials_string
+    make_plot(x_axis, ratio_sds, title, 'Number of Flips',
+              'Standard Deviation', 'ko', logX = True, logY = True)
+    title = "Mean abs(#Heads - #Tails)" + num_trials_string
+    make_plot(x_axis, diff_means, title, 'Number of Flips',
+              'Mean abs(#Heads - #Tails)', 'ko', logX = True, logY = True)
+    title = "SD abs(#Heads - #Tails)" + num_trials_string
+    make_plot(x_axis, diff_sds, title,
+              'Number of Flips','Standard Deviation', 'ko',
+              logX = True, logY = True)
+
+flip_plot1(4, 20, 20)
+
+def cv(X):
+    mean = sum(X) / len(X)
+    try:
+        return std_dev(X) / mean
+    except ZeroDivisionError:
+        return float('nan')
+#%%
+def flip_plot2(min_exp, max_exp, num_trials):
+    """Assumes min_exp, max_exp, and num_trials ints > 0;
+       min_exp < max_exp
+       Plots results of num_trials trials of
+       2**min_exp to 2**max_exp coin flips"""
+    ratio_means, diff_means, ratio_sds, diff_sds = [], [], [], []
+    ratio_cvs, diff_cvs, x_axis = [], [], []
+    for exp in range(min_exp, max_exp + 1):
+        x_axis.append(2**exp)
+    for num_flips in x_axis:
+        ratios, diffs = [], []
+        for t in range(num_trials):
+            num_heads, num_tails = run_trial(num_flips)
+            ratios.append(num_heads / float(num_tails))
+            diffs.append(abs(num_heads - num_tails))
+        ratio_means.append(sum(ratios) / num_trials)
+        diff_means.append(sum(diffs) / num_trials)
+        ratio_sds.append(std_dev(ratios))
+        diff_sds.append(std_dev(diffs))
+        ratio_cvs.append(cv(ratios))
+        diff_cvs.append(cv(diffs))
+    num_trials_string = ' (' + str(num_trials) + ' Trials)'
+    title = 'Mean Heads/Tails Ratios' + num_trials_string
+    make_plot(x_axis, ratio_means, title, 'Number of Flips',
+              'Mean Heads/Tails', 'ko', logX = True)
+    title = 'SD Heads/Tails Ratios' + num_trials_string
+    make_plot(x_axis, ratio_sds, title, 'Number of Flips',
+              'Standard Deviation', 'ko', logX = True, logY = True)
+    title = 'Mean abs(#Heads - #Tails)' + num_trials_string
+    make_plot(x_axis, diff_means, title, 'Number of Flips',
+              'Mean abs(#Heads - #Tails)', 'ko', logX = True, logY = True)
+    title = 'SD abs(#Heads - #Tails)' + num_trials_string
+    make_plot(x_axis, diff_sds, title,
+              'Number of Flips','Standard Deviation', 'ko',
+              logX = True, logY = True)
+    title = 'Coeff. of Var. abs(#Heads - #Tails)' + num_trials_string
+    make_plot(x_axis, diff_cvs, title, 'Number of Flips',
+              'Coef. of Var. abs(#Heads - #Tails)', 'ko', logX = True)
+    title = 'Coeff. of Var. Heads/Tails Ratio' + num_trials_string
+    make_plot(x_axis, ratio_cvs, title,'Number of Flips',
+              'Coeff. of Var.', 'ko', logX = True, logY = True)
+
+flip_plot2(4, 20, 20)
+#%%
+flip_plot2(4, 20, 1000) #takes a while to run, ~ 20 min.
+
+#%% Distributions ========================================================== 
