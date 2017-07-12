@@ -71,6 +71,7 @@ class Fixed(Mortgage):
         Mortgage.__init__(self, loan, r, months)
         self.legend = 'Fixed, ' + str(r*100) + '%'
 
+
 class FixedWithPts(Mortgage):
     def __init__(self, loan, r, months, pts):
         Mortgage.__init__(self, loan, r, months)
