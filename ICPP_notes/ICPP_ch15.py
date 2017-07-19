@@ -442,6 +442,7 @@ def plot_binom_probs(min_trial = 2, max_trial = 100):
     pylab.ylabel('Probability of Exactly 2 Successes in x trials')
 
 plot_binom_probs()
+
 #%% Exponential and Geometric Distributions
 def clear(n, p, steps):
     """Assumes n & steps positive ints, p a float
@@ -568,4 +569,3 @@ def sim_series(num_series):
     pylab.title(str(num_series) + ' Seven-Game Series')
 
 sim_series(400)
-
