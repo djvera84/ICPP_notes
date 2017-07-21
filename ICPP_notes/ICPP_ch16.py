@@ -9,7 +9,7 @@ import numpy as np
 
 #%% Pascal's Problem =======================================================
 def roll_die():
-    return random.choice([1, 2, 3, 4, 5, 6]) 
+    return random.choice([1, 2, 3, 4, 5, 6])
     # changing above to [1, 1, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6] yields
     # dramatic effects and represents a 'cheater's dice'
     # fair dice: [1, 2, 3, 4, 5, 6]
@@ -62,7 +62,7 @@ class CrapsGame(object):
                     break
     
     def pass_results(self):
-        return(self.pass_wins, self.pass_losses)
+        return (self.pass_wins, self.pass_losses)
     
     def dp_results(self):
         return (self.dp_wins, self.dp_losses, self.dp_pushes)
@@ -70,31 +70,33 @@ class CrapsGame(object):
 
 def craps_sim(hands_per_game, num_games):
     """Assumes hands_per_game and num_games are ints > 0
-       Play num_games games of hands_per_game hands; print results"""
+       Play num_games of hands_per_game hands; print results"""
     games = []
     
     # Play num_games games
     for t in range(num_games):
         c = CrapsGame()
-        for i in range(hands_per_game):
+        for i in range (hands_per_game):
             c.play_hand()
         games.append(c)
-    
-    #Produce statistics for each game
-    p_ROI_per_game, dp_ROI_per_game = [], []
+        
+    # Produce statistics for each game
+    pROI_per_game, dpROI_per_game = [], []
     for g in games:
         wins, losses = g.pass_results()
-        p_ROI_per_game.append((wins - losses) / float(hands_per_game))
-        wins, loses, pushes = g.dp_results()
-        dp_ROI_per_game.append((wins - losses) / float(hands_per_game))
+        pROI_per_game.append((wins - losses) / float(hands_per_game))
+        wins, losses, pushes = g.dp_results()
+        dpROI_per_game.append((wins - losses) / float(hands_per_game))
     
     # Produce and print summary statistics
-    mean_ROI = str(round((100 * sum(p_ROI_per_game) / num_games), 4)) + '%'
-    sigma = str(round(100 * np.std(p_ROI_per_game), 4)) +'%'
-    print('Pass:', 'Mean ROI =', mean_ROI, 'Std. Dev =', sigma)
-    mean_ROI = str(round((100 * sum(dp_ROI_per_game) / num_games), 4)) + '%'
-    sigma = str(round(100 * np.std(dp_ROI_per_game), 4)) +'%'
-    print("Don't Pass:", 'Mean ROI =', mean_ROI, 'Std. Dev =', sigma)
+    
+    meanROI = str(round((100*sum(pROI_per_game)/num_games), 4)) + '%'
+    sigma = str(round(100*np.std(pROI_per_game), 4)) + '%'
+    print('Pass:',  'Mean ROI =', meanROI, 'Std. Dev. =', sigma)
+      
+    meanROI = str(round((100*sum(dpROI_per_game)/num_games), 4)) + '%'
+    sigma = str(round(100*np.std(dpROI_per_game), 4)) + '%'
+    print('Don\'t Pass:',  'Mean ROI =', meanROI, 'Std. Dev. =', sigma)
 
 # Structure of craps_sim simulation:
 #   1. Runs multiple games (or trials) and accumulates the results;
@@ -104,7 +106,7 @@ def craps_sim(hands_per_game, num_games):
 # ROI = (gain - cost) / cost, "simple ROI."
 # In game above, since the pass and don't pass lines pay even money,
 # the ROI is (number of wins - number of losses) / (number of bets)
-
+                
 craps_sim(20, 10)
 craps_sim(1000000, 10)
 craps_sim(20, 1000000)
