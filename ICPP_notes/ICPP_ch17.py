@@ -101,3 +101,82 @@ pylab.title('Distribution of Sample Means')
 pylab.xlabel('Sample Mean')
 pylab.ylabel('Frequency of Occurence')
 pylab.legend()
+
+#%% The Central Limit Theorem ==============================================
+
+def plot_means(num_dice_per_trial, num_dice_thrown, num_bins, legend,
+               color, style):
+    
+    means =[]
+    num_trials = num_dice_thrown // num_dice_per_trial
+    for i in range(num_trials):
+        vals = 0
+        for j in range(num_dice_per_trial):
+            vals += 5 * random.random()
+        means.append(vals / num_dice_per_trial)
+    pylab.hist(means, num_bins, color = color, label = legend,
+               weights = pylab.array(len(means) * [1]) / len(means),
+               hatch = style)
+    return sum(means) / len(means), np.var(means)
+
+mean, var = plot_means(1, 100000, 11, '1 die', 'w', "*")
+print('Mean of rolling 1 die =', round(mean, 4),
+      'Variance =', round(var, 4))
+mean, var = plot_means(100, 100000, 11,
+                       'Mean of 100 dice', 'w', '//')
+print('Mean of rolling 100 dice =', round(mean, 4),
+      'Variance =', round(var, 4))
+pylab.title('Rolling Continuous Dice')
+pylab.xlabel('Value')
+pylab.ylabel('Probability')
+pylab.legend()
+#%%
+
+times = get_bm_data('bm_results2012.txt')['time']
+mean_of_means, std_of_means = [], []
+sample_sizes = range(50, 2000, 200)
+for sample_size in sample_sizes:
+    sample_means = []
+    for t in range(20):
+        sample = random.sample(times, sample_size)
+        sample_means.append(sum(sample) / sample_size)
+    mean_of_means.append(sum(sample_means) / len(sample_means))
+    std_of_means.append(np.std(sample_means))
+pylab.errorbar(sample_sizes, mean_of_means,
+               yerr = 1.96 * pylab.array(std_of_means),
+               label = 'Estimated mean and 95% confidence interval')
+pylab.xlim(0, max(sample_sizes) + 50)
+pylab.axhline(sum(times) / len(times), linestyle = '--',
+              label = 'Population mean')
+pylab.title('Estimates of Mean Finishing Time')
+pylab.xlabel('Sample Size')
+pylab.ylabel('Finishing Time (minutes)')
+pylab.legend(loc = 'best')
+
+#%% Standard Error of the Mean
+times = get_bm_data('bm_results2012.txt')['time']
+pop_std = np.std(times)
+sample_sizes = range(2, 200, 2)
+diffs_means = []
+for sample_size in sample_sizes:
+    diffs = []
+    for t in range(100):
+        diffs.append(abs(pop_std - np.std(random.sample(times,
+                                                        sample_size))))
+    diffs_means.append(sum(diffs) / len(diffs))
+pylab.plot(sample_sizes, diffs_means)
+pylab.xlabel('Sample Size')
+pylab.ylabel('Abs(Pop. Std - Sample Std)')
+pylab.title('Sample SD vs Population SD')
+#%%
+times = get_bm_data('bm_results2012.txt')['time']
+pop_mean = sum(times) / len(times)
+sample_size = 200
+num_bad = 0
+for t in range(10000):
+    sample = random.sample(times, sample_size)
+    sample_mean = sum(sample) / sample_size
+    se = np.std(sample) / sample_size**0.5
+    if abs(pop_mean - sample_mean) > 1.96 * se:
+        num_bad += 1
+print('Fraction outside 95% confidence interval =', num_bad/10000)
