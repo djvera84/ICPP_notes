@@ -6,6 +6,7 @@ Understanding Experimental Data
 """
 import pylab
 import numpy as np
+import math
 #%% The Behavior of Springs ================================================
 
 def get_data(filename):
@@ -214,7 +215,9 @@ def get_horizontal_speed(quad_fit, min_x, max_x):
     g = 32.16 * inches_per_foot #accel. of gravity in inches/sec/sec
     t = (2 * y_peak / g)**0.5 # time in seconds from peak to target
     print('Horizontal speed =',
-          int(x_mid/(t * inches_per_foot)), 'feet/sec')
+          int(x_mid/(t * inches_per_foot)), 'feet/sec',
+          '\nVertical speed =',
+          int(g*t), 'feet/sec')
 
 def process_trajectories_rsquared_speed(filename):
     distances, heights = get_trajectory_data(filename)
@@ -239,5 +242,83 @@ def process_trajectories_rsquared_speed(filename):
     print('RSquare of qudratic fit =', r_squared(mean_heights, altitudes))
     pylab.legend()
     get_horizontal_speed(fit, distances[-1], distances[0])
+    #first element of list is distance at end of trajectory, 
+    #last is beginning position
     
 process_trajectories_rsquared_speed('launcherData.txt')
+
+#%% Fitting Exponentially Distributed Data
+
+vals = []
+for i in range(10):
+    vals.append(3**i)
+pylab.plot(vals, 'ko', label = 'Actual points')
+x_vals = pylab.arange(10)
+fit = pylab.polyfit(x_vals, vals, 5)
+y_vals = pylab.polyval(fit, x_vals)
+pylab.plot(y_vals, 'kx', label =  'Predicted points',
+           markeredgewidth = 2, markersize = 25)
+pylab.title('Fitting y = 3**x')
+pylab.legend(loc = 'upper left')
+
+print('Model predicts that 3**20 is roughly', pylab.polyval(fit, [3**20])[0])
+print('Actual value of 3**20 is', 3**20) 
+#%%
+x_vals, y_vals = [], []
+for i in range(10):
+    x_vals.append(i)
+    y_vals.append(3**i)
+pylab.plot(x_vals, y_vals, 'k')
+pylab.semilogy()
+#%%
+
+def create_data(f, x_vals):
+    """Assumes f is a function of one argument
+       x_vals is an array of suitable arguments for f
+       Returns array containing results of apply f to the
+       elements of x_vals"""
+    y_vals = []
+    for i in x_vals:
+        y_vals.append(f(x_vals[i]))
+    return pylab.array(y_vals)
+
+def fit_exp_data(x_vals, y_vals):
+    """Assumes x_vals and y_vals arrays of numbers such that
+       y_valls [i] == f(x_vals[i]) where f is an exponential function
+       Returns a, b base such that log(f(x), base) == ax + b"""
+    log_vals = []
+    for y in y_vals:
+        log_vals.append(math.log(y, 2.0)) # get log base 2
+    fit = pylab.polyfit(x_vals, log_vals, 1)
+    return fit, 2.0
+
+x_vals = range(10)
+f = lambda x: 3**x
+y_vals = create_data(f, x_vals)
+pylab.plot(x_vals, y_vals, 'ko', label = 'Actual values')
+fit, base = fit_exp_data(x_vals, y_vals)
+predicted_y_vals = []
+for x in x_vals:
+    predicted_y_vals.append(base**pylab.polyval(fit, x))
+pylab.plot(x_vals, predicted_y_vals, label = 'Predicted values')
+pylab.title('Fitting an Exponential Function')
+pylab.legend(loc = 'upper left')
+# Look at a value for x not in original data
+print('f(20) =', f(20))
+print('Predicted value =', int(base**(pylab.polyval(fit, [20]))))
+
+#%% To see error when y = base**(ax + b) does not describe relationship:
+x_vals = range(10)
+f = lambda x: 3**x + x
+y_vals = create_data(f, x_vals)
+pylab.plot(x_vals, y_vals, 'ko', label = 'Actual values')
+fit, base = fit_exp_data(x_vals, y_vals)
+predicted_y_vals = []
+for x in x_vals:
+    predicted_y_vals.append(base**pylab.polyval(fit, x))
+pylab.plot(x_vals, predicted_y_vals, label = 'Predicted values')
+pylab.title('Fitting an Exponential Function')
+pylab.legend(loc = 'upper left')
+# Look at a value for x not in original data
+print('f(20) =', f(20))
+print('Predicted value =', int(base**(pylab.polyval(fit, [20]))))
