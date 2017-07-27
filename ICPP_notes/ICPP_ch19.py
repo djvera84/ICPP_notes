@@ -105,7 +105,9 @@ for t in range(num_trials):
         at_least += 1
 print('Probability of result at least this',
       'extreme by accident =', at_least / num_trials)
+
 #%% Multiple Hypotheses ====================================================
+
 def get_bm_data(filename):
     """Read the contents of the given file. Assumes the file
        in a comma-seperated format, with 6 elements in each entry:
