@@ -25,7 +25,7 @@ def get_bm_data(filename):
         split = line.split(',')
         data['name'].append(split[0])
         data['gender'].append(split[1])
-        data['age'].append(split[2])
+        data['age'].append(int(split[2]))
         data['division'].append(split[3])
         data['country'].append(split[4])
         data['time'].append(float(split[5][:-1])) # remove \n
