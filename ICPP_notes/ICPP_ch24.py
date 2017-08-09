@@ -7,6 +7,7 @@ Classification Methods
 import random
 import pylab
 import sklearn.linear_model
+import numpy as np
 #%% Evaluating Classifiers =================================================
 def accuracy(true_pos, false_pos, true_neg, false_neg):
     numerator = true_pos + true_neg
@@ -449,3 +450,128 @@ pylab.ylabel('AUROC')
 pylab.xlim([5, 1000])
 pylab.ylim([0.4, 1])
 #%% Surviving the Titanic ==================================================
+def minkowski_dist(v1, v2, p):
+    """Assumes v1 and v2 are equal-length arrays of numbers
+       Returns Minkowski distance of order p between v1 and v2"""
+    dist = 0.0
+    for i in range(len(v1)):
+        dist += abs(v1[i] - v2[i])**p
+    return dist**(1 / p)
+
+
+class Passenger(object):
+    features = ('C1', 'C2', 'C3', 'age', 'male gender')
+    
+    def __init__(self, p_class, age, gender, survived, name):
+        self.name = name
+        self.feature_vec = [0, 0, 0, age, gender]
+        self.feature_vec[p_class - 1] = 1
+        self.label = survived
+        self.cabin_class = p_class
+        
+    def distance(self, other):
+        return minkowski_dist(self.feature_vec, other.feature_vec, 2)
+    
+    def get_class(self):
+        return self.cabin_class
+    
+    def get_age(self):
+        return feature_vec[3]
+    
+    def get_gender(self):
+        return feature_vec[4]
+    
+    def get_name(self):
+        return self.name
+    
+    def get_features(self):
+        return self.feature_vec[:]
+    
+    def get_label(self):
+        return self.label
+    
+
+def get_titanic_data(fname):
+    data = {}
+    data['class'], data['survived'], data['age'] = [], [], []
+    data['gender'], data['name'] = [], []
+    f = open(fname)
+    line = f.readline()
+    while line != '':
+        split = line.split(',')
+        data['class'].append(int(split[0]))
+        data['age'].append(float(split[1]))
+        if split[2] == 'M':
+            data['gender'].append(1)
+        else:
+            data['gender'].append(0)
+        data['survived'].append(int(split[3])) # 1 = survived
+        data['name'].append(split[4:])
+        line = f.readline()
+    return data
+                
+def build_titanic_examples(filename):
+    data = get_titanic_data(filename)
+    examples = []
+    for i in range(len(data['class'])):
+        p = Passenger(data['class'][i], data['age'][i],
+                      data['gender'][i], data['survived'][i],
+                      data['name'][i])
+        examples.append(p)
+    return examples
+
+def test_models(examples, num_trials, print_stats, print_weights):
+    survived = 1 # value of label indicating survived
+    stats, weights = [], [[], [], [], [], []]  
+    for i in range(num_trials):
+        training, test_set = divide80_20(examples)
+        feature_vecs, labels = [], []
+        for e in training:
+            feature_vecs.append(e.get_features())
+            labels.append(e.get_label())
+        feature_vecs = pylab.array(feature_vecs)
+        labels = pylab.array(labels)
+        model =\
+          sklearn.linear_model.LogisticRegresssion().fit(feature_vecs,
+                                                         labels)
+        for i in range(len(Passenger.features)):
+            weights[i].append(model.coef_[0][i])
+        true_pos, false_pos, true_neg, false_neg =\
+                           apply_model(model, test_set, 1, 0.5)
+        auroc = buld_ROC(model, test_set, 1, None, False)
+        tmp = get_stats(true_pos, false_pos, true_neg, false_neg, False)
+        stats.append(tmp + (auroc,))
+    print('Averages for', num_trials, 'trials')
+    if print_weights:
+        for feature in range(len(weights)):
+            feature_mean = sum(weights[feature]) / num_trials
+            feature_std = np.std(weights[feature])
+            print(' Mean weight of', Passenger.features[feature],
+                  '=', str(round(feature_mean, 3)) + ',',
+                  '95% confidence interval =', round(1.96*feature_std, 3))
+    if print_stats:
+        summarize_stats(stats)
+
+def summarize_stats(stats):
+    """Assumes stats a list of 5 floats: accuracy, sensitivity,
+       specificty, pos. pred. val., ROC"""
+    def print_stat(X, name):
+        mean = round(sum(X)/len(X), 3)
+        std = np.std(X)
+        print(' Mean', name, '=', str(mean) + ',',
+              '95% confidence interval =', round(1.96*std, 3))
+    accs, sens, specs, ppvs, aurocs = [], [], [], [], []
+    for stat in stats:
+        accs.append(stat[0])
+        sens.append(stat[1])
+        specs.append(stat[2])
+        ppvs.append(stat[3])
+        aurocs.append(stat[4])
+    print_stat(accs, 'accuracy')
+    print_stat(sens, 'sensitivity')
+    print_stat(accs, 'specificity')
+    print_stat(sens, 'pos. pred. val.')
+    print_stat(aurocs, 'AUROC')
+
+test_models(examples, 100, True, False)
+test_models(examples, 100, False, True)
